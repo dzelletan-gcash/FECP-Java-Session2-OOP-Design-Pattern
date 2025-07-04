@@ -1,6 +1,9 @@
 package org.example;
 
+import org.example.factory.ServiceFactory;
 import org.example.model.Patient;
+import org.example.model.Service;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -29,8 +32,7 @@ public class HospitalBillingSystem {
                     registerPatient();
                     break;
                 case 2:
-                    // To be implemented by the team member handling Service Management
-                    System.out.println("Feature 'Add Service' is not yet implemented.");
+                    addServiceToPatient();
                     break;
                 case 3:
                     // To be implemented by the team member handling Billing Computation
@@ -48,9 +50,6 @@ public class HospitalBillingSystem {
         scanner.close();
     }
 
-    /**
-     * Displays the main menu options to the user.
-     */
     private static void printMenu() {
         System.out.println("\n--- Main Menu ---");
         System.out.println("1. Register Patient");
@@ -59,16 +58,12 @@ public class HospitalBillingSystem {
         System.out.println("4. Exit");
     }
 
-    /**
-     * Handles the logic for registering a new patient.
-     * It prompts for patient details and adds them to the system.
-     */
+
     private static void registerPatient() {
         System.out.println("\n--- Register New Patient ---");
         System.out.print("Enter Patient ID (e.g., P101): ");
         String id = scanner.nextLine();
 
-        // Check if patient ID already exists
         if (findPatientById(id) != null) {
             System.out.println("Error: A patient with this ID already exists.");
             return;
@@ -83,12 +78,35 @@ public class HospitalBillingSystem {
         System.out.println("Patient registered successfully!");
     }
 
-    /**
-     * Finds a patient in the patientList by their ID.
-     *
-     * @param id The ID of the patient to find.
-     * @return The Patient object if found, otherwise null.
-     */
+    private static void addServiceToPatient() {
+        System.out.println("\n--- Add Service to Patient ---");
+        System.out.print("Enter Patient ID: ");
+        String patientId = scanner.nextLine();
+
+        Patient patient = findPatientById(patientId);
+        if (patient == null) {
+            System.out.println("Error: Patient not found.");
+            return;
+        }
+
+        System.out.println("Available Services: Consultation, X-Ray, Surgery");
+        System.out.print("Select service to add: ");
+        String serviceType = scanner.nextLine();
+
+        // Use the factory to create the service object
+        Service service = ServiceFactory.getService(serviceType);
+
+        if (service == null) {
+            System.out.println("Error: Invalid service type selected.");
+            return;
+        }
+
+        // Add the created service to the patient's record
+        patient.addService(service);
+        System.out.println("Service '" + service.getServiceName() + "' added to patient " + patient.getPatientName() + ".");
+    }
+
+
     public static Patient findPatientById(String id) {
         for (Patient patient : patientList) {
             if (patient.getPatientId().equalsIgnoreCase(id)) {
