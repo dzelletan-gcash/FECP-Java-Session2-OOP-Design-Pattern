@@ -1,6 +1,6 @@
 # FECP Java Session2 OOP Design Pattern - Group 14
 
-## 1. Group Information
+## Group Information
 
 | Name              | GitHub Username | Role |
 |:------------------| :--- | :--- |
@@ -10,26 +10,24 @@
 
 ---
 
-## 2. Project Title
+## Project Title
 
-**Hospital Billing System**
+**GCash MedCare Billing System**
 
 ---
 
-## 3. Project Description
+## Project Description
 
-This project is a Java-based console application designed to manage a simple hospital billing process. It demonstrates core Object-Oriented Programming (OOP) principles and applies fundamental design patterns to handle patient registration, service management, and flexible billing computations.
+This project is a Java-based console application designed to manage Gcash Medcare billing process. It demonstrates core Object-Oriented Programming (OOP) principles and applies fundamental design patterns to handle patient registration, service management, and flexible billing computations.
 
 The system allows a user to:
 * Register new patients.
 * Add various medical services (like Consultation, X-Ray, and Surgery) to a patient's record.
 * Calculate the final bill by applying different discount strategies based on the payment method (e.g., HMO, Senior Citizen, Cash).
 
-This project fulfills the requirements of the **Lab 3: Java OOP Capstone Project**.
-
 ---
 
-## 4. Design Patterns Implemented
+## Design Patterns Implemented
 
 This project leverages two key design patterns to ensure a flexible and maintainable codebase.
 
@@ -43,14 +41,42 @@ This project leverages two key design patterns to ensure a flexible and maintain
 
 ---
 
-## 5. Project Structure
+## Project Structure
 
 The project is organized into several classes, each with a distinct responsibility, following OOP principles.
 
-## 6. Screenshot of Output
+We used packages to group classes by their function:
+* **`model/`**: Holds the data blueprints (Patient, Service).
+* **`factory/`**: Contains the class responsible for creating objects (ServiceFactory).
+* **`strategy/`**: Holds the different billing algorithm classes (HmoBillingStrategy, CashBillingStrategy, etc.).
 
-Here is a screenshot of the application running in the console.
+![Folder Structure](docs/folder-structure.png)
 
-![Application Screenshot](docs/screenshot.png)
+This separation makes it clear where to look if patient's data structure needs to be changed, how services are created, or how billing is calculated.
 
-*(**Instructions:** Replace `docs/screenshot.png` with the actual path to your screenshot in the repository. It's good practice to create a `docs` or `images` folder for this.)*
+### UML Class Diagram
+
+The UML (Unified Modeling Language) class diagram below provides a visual blueprint of the system's architecture. It illustrates the classes, their attributes and methods, and how they are related to one another.
+* **Classes**: Each box represents a class, such as `Patient` or `Service`.
+* **Relationships**: The lines and arrows show how the classes interact. For instance, the diagram shows that a `HospitalBillingSystem` manages many `Patient` objects and that a `Patient` can receive multiple `Service`s.
+* **Design Patterns**: The diagram clearly depicts the **Factory Pattern** through the `ServiceFactory` creating `Service` objects. It also shows the **Strategy Pattern**, with the `BillingStrategy` interface being implemented by concrete strategies like `HmoBillingStrategy` and `CashBillingStrategy`.
+
+![Unified Modeling Language](docs/uml.png)
+
+This diagram serves as a guide to understanding the project's object-oriented design at a high level.
+
+---
+
+## Screenshot of Output
+
+Register a Patient
+![Unified Modeling Language](docs/register-patient.png)
+
+Add Services
+![Unified Modeling Language](docs/add-service.png)
+
+Compute a Bill
+![Unified Modeling Language](docs/compute-bill.png)
+
+Exit
+![Unified Modeling Language](docs/exit.png)
