@@ -1,7 +1,15 @@
 package org.example.strategy;
 
-// Andre will implement this
+/**
+ * The interface for a billing strategy.
+ * Defines the contract for calculating the final cost of a bill.
+ */
 public interface BillingStrategy {
-    // To be implemented: float calculate(float originalCost);
+    /**
+     * Calculates the final bill amount based on an original cost.
+     *
+     * @param originalCost The total cost before any discounts.
+     * @return The final, calculated cost.
+     */
+    float calculate(float originalCost);
 }
-
