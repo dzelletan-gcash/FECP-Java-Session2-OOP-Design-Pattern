@@ -1,12 +1,13 @@
 package org.example.strategy;
-// Andre will implement this
+
+/**
+ * A billing strategy for HMO members, which applies a 20% discount.
+ */
 public class HmoBillingStrategy implements BillingStrategy {
+    private static final float DISCOUNT_RATE = 0.80f; // 20% discount
+
     @Override
-    public double computeBill(double[] serviceCosts) {
-        double total = 0;
-        for (double cost : serviceCosts) {
-            total += cost * 0.80; // HMO example - 20% discount
-        }
-        return total;
+    public float calculate(float originalCost) {
+        return originalCost * DISCOUNT_RATE;
     }
 }

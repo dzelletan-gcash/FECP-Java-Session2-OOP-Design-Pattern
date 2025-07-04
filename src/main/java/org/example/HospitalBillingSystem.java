@@ -3,24 +3,21 @@ package org.example;
 import org.example.factory.ServiceFactory;
 import org.example.model.Patient;
 import org.example.model.Service;
+import org.example.strategy.*; // Import all strategies
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-
 public class HospitalBillingSystem {
 
-    // A list to store all patient records in the system.
     private static final List<Patient> patientList = new ArrayList<>();
-    // A scanner to read input from the user.
     private static final Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
-        System.out.println("=== Welcome to the Hospital Billing System ===");
+        printHospitalBanner(); // Display the new UI banner
         boolean running = true;
 
-        // Main application loop
         while (running) {
             printMenu();
             System.out.print("Enter your choice: ");
@@ -35,20 +32,40 @@ public class HospitalBillingSystem {
                     addServiceToPatient();
                     break;
                 case 3:
-                    // To be implemented by the team member handling Billing Computation
-                    System.out.println("Feature 'Compute Bill' is not yet implemented.");
+                    computeBill();
                     break;
                 case 4:
                     running = false;
-                    System.out.println("Thank you for using the system. Exiting.");
+                    System.out.println("\nThank you for using the system. Exiting.");
                     break;
                 default:
                     System.out.println("Invalid choice. Please try again.");
             }
-            System.out.println(); // Add a blank line for better readability
+            System.out.println();
         }
         scanner.close();
     }
+
+    /**
+     * Displays a decorative banner for the hospital.
+     */
+    private static void printHospitalBanner() {
+        System.out.println("  ██████╗  ██████╗ █████╗ ███████╗██╗  ██╗    ███╗   ███╗███████╗██████╗  ██████╗ █████╗ ██████╗ ███████╗");
+        System.out.println(" ██╔════╝ ██╔════╝██╔══██╗██╔════╝██║  ██║    ████╗ ████║██╔════╝██╔══██╗██╔════╝██╔══██╗██╔══██╗██╔════╝");
+        System.out.println(" ██║  ███╗██║     ███████║███████╗███████║    ██╔████╔██║█████╗  ██║  ██║██║     ███████║██████╔╝█████╗  ");
+        System.out.println(" ██║   ██║██║     ██╔══██║╚════██║██╔══██║    ██║╚██╔╝██║██╔══╝  ██║  ██║██║     ██╔══██║██╔══██╗██╔══╝  ");
+        System.out.println(" ╚██████╔╝╚██████╗██║  ██║███████║██║  ██║    ██║ ╚═╝ ██║███████╗██████╔╝╚██████╗██║  ██║██║  ██║███████╗");
+        System.out.println("  ╚═════╝  ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝    ╚═╝     ╚═╝╚══════╝╚═════╝  ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝");
+        System.out.println("\n-----------------------------------------------------");
+        System.out.println(" Developed by:");
+        System.out.println(" - Kayne Rodrigo");
+        System.out.println(" - Dzelle Tan");
+        System.out.println(" - Andre Lacra");
+        System.out.println("-----------------------------------------------------");
+        System.out.println("\nWelcome to the GCash MedCare Billing System!");
+    }
+
+
 
     private static void printMenu() {
         System.out.println("\n--- Main Menu ---");
@@ -57,7 +74,6 @@ public class HospitalBillingSystem {
         System.out.println("3. Compute Bill");
         System.out.println("4. Exit");
     }
-
 
     private static void registerPatient() {
         System.out.println("\n--- Register New Patient ---");
@@ -93,7 +109,6 @@ public class HospitalBillingSystem {
         System.out.print("Select service to add: ");
         String serviceType = scanner.nextLine();
 
-        // Use the factory to create the service object
         Service service = ServiceFactory.getService(serviceType);
 
         if (service == null) {
@@ -101,11 +116,56 @@ public class HospitalBillingSystem {
             return;
         }
 
-        // Add the created service to the patient's record
         patient.addService(service);
         System.out.println("Service '" + service.getServiceName() + "' added to patient " + patient.getPatientName() + ".");
     }
 
+    private static void computeBill() {
+        System.out.println("\n--- Compute Patient Bill ---");
+        System.out.print("Enter Patient ID: ");
+        String patientId = scanner.nextLine();
+
+        Patient patient = findPatientById(patientId);
+        if (patient == null) {
+            System.out.println("Error: Patient not found.");
+            return;
+        }
+
+        float originalCost = patient.getTotalCost();
+        if (originalCost == 0) {
+            System.out.println("Patient has no services. Total bill is 0.");
+            return;
+        }
+
+        System.out.print("Enter Insurance Type (hmo/cash/senior): ");
+        String insuranceType = scanner.nextLine();
+
+        BillingStrategy strategy;
+
+        switch (insuranceType.toLowerCase()) {
+            case "hmo":
+                strategy = new HmoBillingStrategy();
+                break;
+            case "cash":
+                strategy = new CashBillingStrategy();
+                break;
+            case "senior":
+                strategy = new SeniorBillingStrategy();
+                break;
+            default:
+                System.out.println("Error: Invalid insurance type. Using cash as default.");
+                strategy = new CashBillingStrategy();
+                break;
+        }
+
+        float finalBill = strategy.calculate(originalCost);
+
+        System.out.println("\n--- Bill Generated ---");
+        System.out.printf("Patient: %s (ID: %s)\n", patient.getPatientName(), patient.getPatientId());
+        System.out.printf("Original Cost: %.2f\n", originalCost);
+        System.out.printf("Final Bill (after discount): %.2f\n", finalBill);
+        System.out.println("--------------------");
+    }
 
     public static Patient findPatientById(String id) {
         for (Patient patient : patientList) {

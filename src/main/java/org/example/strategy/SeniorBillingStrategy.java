@@ -1,12 +1,15 @@
 package org.example.strategy;
-// Andre will implement this
+
+/**
+ * A billing strategy for Senior Citizens, which applies a 15% discount.
+ */
 public class SeniorBillingStrategy implements BillingStrategy {
+    private static final float DISCOUNT_RATE = 0.85f; // 15% discount
+
     @Override
-    public double computeBill(double[] serviceCosts) {
-        double total = 0;
-        for (double cost : serviceCosts) {
-            total += cost * 0.85; // senior example - 15% discount
-        }
-        return total;
+    public float calculate(float originalCost) {
+        return originalCost * DISCOUNT_RATE;
     }
 }
+
+
