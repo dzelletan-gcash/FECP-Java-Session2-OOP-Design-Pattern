@@ -175,4 +175,7 @@ public class HospitalBillingSystem {
         }
         return null;
     }
+
+    public static void resetForTesting() {
+    }
 }

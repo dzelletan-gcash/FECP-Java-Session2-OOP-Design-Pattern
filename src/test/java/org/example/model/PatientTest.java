@@ -4,61 +4,145 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Unit tests for the Patient class.
- */
 class PatientTest {
 
     private Patient patient;
+    private Service consultationService;
+    private Service xrayService;
+    private Service surgeryService;
 
     @BeforeEach
     void setUp() {
-        // This method runs before each test, setting up a fresh Patient object.
         patient = new Patient("P101", "John Doe");
+        consultationService = new Service("Consultation", 500.0f);
+        xrayService = new Service("X-Ray", 1500.0f);
+        surgeryService = new Service("Surgery", 10000.0f);
     }
 
-    /**
-     * Test 1: Verifies that the constructor correctly initializes a Patient object.
-     */
     @Test
-    void testPatientCreation() {
-        assertNotNull(patient, "Patient object should not be null.");
-        assertEquals("P101", patient.getPatientId(), "Patient ID should match.");
-        assertEquals("John Doe", patient.getPatientName(), "Patient name should match.");
-        assertNotNull(patient.getServices(), "Services list should be initialized, not null.");
-        assertTrue(patient.getServices().isEmpty(), "A new patient should have no services.");
+    void testPatientConstructor() {
+        Patient testPatient = new Patient("P102", "Jane Smith");
+        assertEquals("P102", testPatient.getPatientId());
+        assertEquals("Jane Smith", testPatient.getPatientName());
+        assertNotNull(testPatient.getServices());
+        assertTrue(testPatient.getServices().isEmpty());
     }
 
-    /**
-     * Test 2: Verifies that adding a single service works correctly.
-     */
+    @Test
+    void testPatientConstructorWithNullValues() {
+        Patient testPatient = new Patient(null, null);
+        assertNull(testPatient.getPatientId());
+        assertNull(testPatient.getPatientName());
+        assertNotNull(testPatient.getServices());
+        assertTrue(testPatient.getServices().isEmpty());
+    }
+
+    @Test
+    void testPatientConstructorWithEmptyValues() {
+        Patient testPatient = new Patient("", "");
+        assertEquals("", testPatient.getPatientId());
+        assertEquals("", testPatient.getPatientName());
+        assertNotNull(testPatient.getServices());
+        assertTrue(testPatient.getServices().isEmpty());
+    }
+
+    @Test
+    void testGetPatientId() {
+        assertEquals("P101", patient.getPatientId());
+    }
+
+    @Test
+    void testGetPatientName() {
+        assertEquals("John Doe", patient.getPatientName());
+    }
+
+    @Test
+    void testGetServices() {
+        assertNotNull(patient.getServices());
+        assertTrue(patient.getServices().isEmpty());
+    }
+
     @Test
     void testAddService() {
-        Service xrayService = new Service("X-Ray", 1500.0f);
-        patient.addService(xrayService);
-
-        assertEquals(1, patient.getServices().size(), "Services list should contain one item after adding.");
-        assertEquals("X-Ray", patient.getServices().get(0).getServiceName(), "The added service should be correct.");
+        patient.addService(consultationService);
+        assertEquals(1, patient.getServices().size());
+        assertEquals(consultationService, patient.getServices().get(0));
     }
 
-    /**
-     * Test 3: Verifies that the total cost is calculated correctly for multiple services.
-     */
     @Test
-    void testGetTotalCost_WithMultipleServices() {
-        patient.addService(new Service("Consultation", 500.0f));
-        patient.addService(new Service("Surgery", 10000.0f));
+    void testAddMultipleServices() {
+        patient.addService(consultationService);
+        patient.addService(xrayService);
+        patient.addService(surgeryService);
 
-        // Expected total cost is 500.0 + 10000.0 = 10500.0
-        float expectedCost = 10500.0f;
-        assertEquals(expectedCost, patient.getTotalCost(), "Total cost should be the sum of all service costs.");
+        assertEquals(3, patient.getServices().size());
+        assertEquals(consultationService, patient.getServices().get(0));
+        assertEquals(xrayService, patient.getServices().get(1));
+        assertEquals(surgeryService, patient.getServices().get(2));
     }
 
-    /**
-     * Test 4: Verifies that the total cost is zero when no services have been added.
-     */
+    @Test
+    void testAddNullService() {
+        patient.addService(null);
+        assertEquals(1, patient.getServices().size());
+        assertNull(patient.getServices().get(0));
+    }
+
     @Test
     void testGetTotalCost_NoServices() {
-        assertEquals(0.0f, patient.getTotalCost(), "Total cost should be 0 for a patient with no services.");
+        assertEquals(0.0f, patient.getTotalCost());
+    }
+
+    @Test
+    void testGetTotalCost_SingleService() {
+        patient.addService(consultationService);
+        assertEquals(500.0f, patient.getTotalCost());
+    }
+
+    @Test
+    void testGetTotalCost_MultipleServices() {
+        patient.addService(consultationService);  // 500.0f
+        patient.addService(xrayService);          // 1500.0f
+        patient.addService(surgeryService);       // 10000.0f
+
+        assertEquals(12000.0f, patient.getTotalCost());
+    }
+
+    @Test
+    void testGetTotalCost_WithZeroCostService() {
+        Service freeService = new Service("Free Service", 0.0f);
+        patient.addService(consultationService);  // 500.0f
+        patient.addService(freeService);          // 0.0f
+
+        assertEquals(500.0f, patient.getTotalCost());
+    }
+
+    @Test
+    void testGetTotalCost_WithNegativeCostService() {
+        Service discountService = new Service("Discount", -100.0f);
+        patient.addService(consultationService);  // 500.0f
+        patient.addService(discountService);      // -100.0f
+
+        assertEquals(400.0f, patient.getTotalCost());
+    }
+
+    @Test
+    void testGetTotalCost_WithNullService() {
+        patient.addService(consultationService);  // 500.0f
+        patient.addService(null);                 // This should cause NullPointerException
+
+        assertThrows(NullPointerException.class, () -> {
+            patient.getTotalCost();
+        });
+    }
+
+    @Test
+    void testAddSameServiceMultipleTimes() {
+        patient.addService(consultationService);
+        patient.addService(consultationService);
+        patient.addService(consultationService);
+
+        assertEquals(3, patient.getServices().size());
+        assertEquals(1500.0f, patient.getTotalCost()); // 3 * 500.0f
     }
 }
