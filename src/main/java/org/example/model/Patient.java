@@ -1,4 +1,4 @@
-package org.example;
+package org.example.model;
 // Kayne will implement this
 public class Patient {
     // To be implemented: private fields for patientId, patientName, and a List<Service>
